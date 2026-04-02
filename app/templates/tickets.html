@@ -3,8 +3,13 @@
 {% block title %}工单列表 - Support Demo Platform{% endblock %}
 
 {% block content %}
-<h2>工单列表</h2>
-<p>当前页面展示的是模拟工单数据，后续会接入 MySQL 数据库。</p>
+<div class="page-header">
+    <div>
+        <h2>工单列表</h2>
+        <p>当前页面展示的是数据库中的真实工单数据。</p>
+    </div>
+    <a class="button" href="{{ url_for('main.new_ticket') }}">新建工单</a>
+</div>
 
 <div class="table-wrapper">
     <table>
@@ -15,6 +20,7 @@
                 <th>状态</th>
                 <th>优先级</th>
                 <th>负责人</th>
+                <th>创建时间</th>
             </tr>
         </thead>
         <tbody>
@@ -25,6 +31,7 @@
                 <td>{{ ticket.status }}</td>
                 <td>{{ ticket.priority }}</td>
                 <td>{{ ticket.owner }}</td>
+                <td>{{ ticket.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
             </tr>
             {% endfor %}
         </tbody>

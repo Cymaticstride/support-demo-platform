@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}新建工单 - Support Demo Platform{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <div class="page-header">
+        <h2>新建工单</h2>
+        <a class="button button-secondary" href="{{ url_for('main.tickets') }}">返回工单列表</a>
+    </div>
+
+    <p>填写下面的表单后，数据会直接写入 MySQL 数据库。</p>
+
+    <form class="ticket-form" method="post">
+        <div class="form-group">
+            <label for="title">工单标题</label>
+            <input
+                type="text"
+                id="title"
+                name="title"
+                value="{{ form_data.title }}"
+                placeholder="例如：客户反馈无法导出报表"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="status">状态</label>
+            <select id="status" name="status">
+                <option value="待处理" {% if form_data.status == "待处理" %}selected{% endif %}>待处理</option>
+                <option value="处理中" {% if form_data.status == "处理中" %}selected{% endif %}>处理中</option>
+                <option value="已解决" {% if form_data.status == "已解决" %}selected{% endif %}>已解决</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="priority">优先级</label>
+            <select id="priority" name="priority">
+                <option value="高" {% if form_data.priority == "高" %}selected{% endif %}>高</option>
+                <option value="中" {% if form_data.priority == "中" %}selected{% endif %}>中</option>
+                <option value="低" {% if form_data.priority == "低" %}selected{% endif %}>低</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="owner">负责人</label>
+            <input
+                type="text"
+                id="owner"
+                name="owner"
+                value="{{ form_data.owner }}"
+                placeholder="例如：技术支持C"
+                required
+            >
+        </div>
+
+        <div class="form-actions">
+            <button class="button" type="submit">提交工单</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
