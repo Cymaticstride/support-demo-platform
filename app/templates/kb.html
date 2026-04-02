@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}知识库 - Support Demo Platform{% endblock %}
+
+{% block content %}
+<h2>知识库</h2>
+<p>当前页面展示的是模拟知识库文章，后续会接入数据库和详情页。</p>
+
+<div class="card-grid">
+    {% for article in articles %}
+    <div class="card">
+        <span class="tag">{{ article.category }}</span>
+        <h3>{{ article.title }}</h3>
+        <p>{{ article.summary }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - Support Demo Platform{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h2>客户支持知识库与工单 Demo 平台</h2>
+    <p>
+        这是一个面向软件实施 / 技术支持场景的小型演示项目。
+        当前版本已完成项目骨架、页面路由和基础页面展示。
+    </p>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3>工单管理</h3>
+            <p>展示待处理、处理中、已解决等工单状态。</p>
+            <a class="button" href="{{ url_for('main.tickets') }}">查看工单</a>
+        </div>
+
+        <div class="card">
+            <h3>知识库</h3>
+            <p>用于沉淀部署文档、排障手册和标准操作流程。</p>
+            <a class="button" href="{{ url_for('main.kb') }}">查看知识库</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

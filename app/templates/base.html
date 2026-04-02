@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Support Demo Platform{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> 
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <h1 class="logo">Support Demo Platform</h1>
+            <nav class="nav">
+                <a href="{{ url_for('main.index') }}">首页</a>
+                <a href="{{ url_for('main.tickets') }}">工单列表</a>
+                <a href="{{ url_for('main.kb') }}">知识库</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container main-content">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
