@@ -6,6 +6,15 @@ from .models import Article, Ticket
 main_bp = Blueprint("main", __name__)
 
 
+def get_ticket_stats():
+    return {
+        "all": Ticket.query.count(),
+        "pending": Ticket.query.filter_by(status="待处理").count(),
+        "processing": Ticket.query.filter_by(status="处理中").count(),
+        "resolved": Ticket.query.filter_by(status="已解决").count(),
+    }
+
+
 @main_bp.route("/")
 def index():
     ticket_count = Ticket.query.count()
@@ -20,8 +29,26 @@ def index():
 
 @main_bp.route("/tickets")
 def tickets():
-    ticket_list = Ticket.query.order_by(Ticket.id.asc()).all()
-    return render_template("tickets.html", tickets=ticket_list)
+    status_filter = request.args.get("status", "全部").strip()
+    valid_statuses = {"全部", "待处理", "处理中", "已解决"}
+
+    if status_filter not in valid_statuses:
+        status_filter = "全部"
+
+    query = Ticket.query.order_by(Ticket.id.asc())
+
+    if status_filter != "全部":
+        query = query.filter(Ticket.status == status_filter)
+
+    ticket_list = query.all()
+    stats = get_ticket_stats()
+
+    return render_template(
+        "tickets.html",
+        tickets=ticket_list,
+        current_filter=status_filter,
+        stats=stats
+    )
 
 
 @main_bp.route("/tickets/new", methods=["GET", "POST"])
@@ -61,6 +88,48 @@ def new_ticket():
         return redirect(url_for("main.tickets"))
 
     return render_template("new_ticket.html", form_data=form_data)
+
+
+@main_bp.route("/tickets/<int:ticket_id>/start", methods=["POST"])
+def start_ticket(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+
+    if ticket.status == "待处理":
+        ticket.status = "处理中"
+        db.session.commit()
+        flash(f"工单 #{ticket.id} 已进入“处理中”。")
+    else:
+        flash("只有“待处理”的工单才能开始处理。")
+
+    return redirect(url_for("main.tickets"))
+
+
+@main_bp.route("/tickets/<int:ticket_id>/resolve", methods=["POST"])
+def resolve_ticket(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+
+    if ticket.status == "处理中":
+        ticket.status = "已解决"
+        db.session.commit()
+        flash(f"工单 #{ticket.id} 已标记为“已解决”。")
+    else:
+        flash("只有“处理中”的工单才能标记为已解决。")
+
+    return redirect(url_for("main.tickets"))
+
+
+@main_bp.route("/tickets/<int:ticket_id>/reopen", methods=["POST"])
+def reopen_ticket(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+
+    if ticket.status == "已解决":
+        ticket.status = "处理中"
+        db.session.commit()
+        flash(f"工单 #{ticket.id} 已重新打开。")
+    else:
+        flash("只有“已解决”的工单才能重新打开。")
+
+    return redirect(url_for("main.tickets"))
 
 
 @main_bp.route("/kb")

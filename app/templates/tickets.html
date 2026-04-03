@@ -6,9 +6,35 @@
 <div class="page-header">
     <div>
         <h2>工单列表</h2>
-        <p>当前页面展示的是数据库中的真实工单数据。</p>
+        <p>当前页面展示的是数据库中的真实工单数据，并支持基础状态流转。</p>
     </div>
     <a class="button" href="{{ url_for('main.new_ticket') }}">新建工单</a>
+</div>
+
+<div class="summary-grid">
+    <div class="summary-card">
+        <span class="summary-label">全部工单</span>
+        <strong class="summary-number">{{ stats.all }}</strong>
+    </div>
+    <div class="summary-card">
+        <span class="summary-label">待处理</span>
+        <strong class="summary-number">{{ stats.pending }}</strong>
+    </div>
+    <div class="summary-card">
+        <span class="summary-label">处理中</span>
+        <strong class="summary-number">{{ stats.processing }}</strong>
+    </div>
+    <div class="summary-card">
+        <span class="summary-label">已解决</span>
+        <strong class="summary-number">{{ stats.resolved }}</strong>
+    </div>
+</div>
+
+<div class="filter-bar">
+    <a class="filter-link {% if current_filter == '全部' %}active{% endif %}" href="{{ url_for('main.tickets', status='全部') }}">全部</a>
+    <a class="filter-link {% if current_filter == '待处理' %}active{% endif %}" href="{{ url_for('main.tickets', status='待处理') }}">待处理</a>
+    <a class="filter-link {% if current_filter == '处理中' %}active{% endif %}" href="{{ url_for('main.tickets', status='处理中') }}">处理中</a>
+    <a class="filter-link {% if current_filter == '已解决' %}active{% endif %}" href="{{ url_for('main.tickets', status='已解决') }}">已解决</a>
 </div>
 
 <div class="table-wrapper">
@@ -21,6 +47,7 @@
                 <th>优先级</th>
                 <th>负责人</th>
                 <th>创建时间</th>
+                <th>操作</th>
             </tr>
         </thead>
         <tbody>
@@ -28,10 +55,35 @@
             <tr>
                 <td>{{ ticket.id }}</td>
                 <td>{{ ticket.title }}</td>
-                <td>{{ ticket.status }}</td>
+                <td>
+                    <span class="status-badge
+                        {% if ticket.status == '待处理' %}status-pending{% endif %}
+                        {% if ticket.status == '处理中' %}status-processing{% endif %}
+                        {% if ticket.status == '已解决' %}status-resolved{% endif %}
+                    ">
+                        {{ ticket.status }}
+                    </span>
+                </td>
                 <td>{{ ticket.priority }}</td>
                 <td>{{ ticket.owner }}</td>
                 <td>{{ ticket.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>
+                    <div class="action-group">
+                        {% if ticket.status == "待处理" %}
+                        <form method="post" action="{{ url_for('main.start_ticket', ticket_id=ticket.id) }}">
+                            <button class="button button-small" type="submit">开始处理</button>
+                        </form>
+                        {% elif ticket.status == "处理中" %}
+                        <form method="post" action="{{ url_for('main.resolve_ticket', ticket_id=ticket.id) }}">
+                            <button class="button button-small" type="submit">标记已解决</button>
+                        </form>
+                        {% elif ticket.status == "已解决" %}
+                        <form method="post" action="{{ url_for('main.reopen_ticket', ticket_id=ticket.id) }}">
+                            <button class="button button-secondary button-small" type="submit">重新打开</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
